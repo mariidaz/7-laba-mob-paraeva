@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Lab7_MAUI.ViewModels"
+             x:Class="Lab7_MAUI.Views.DashboardPage"
+             x:DataType="vm:DashboardViewModel"
+             Title="Головна"
+             BackgroundColor="#F1F5F9">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16,16,16,28" Spacing="18" MaximumWidthRequest="540" HorizontalOptions="Fill">
+
+            <!-- Hero Banner Card -->
+            <Border StrokeShape="RoundRectangle 22" StrokeThickness="0" Padding="22,22">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#1E3A8A" Offset="0.0" />
+                        <GradientStop Color="#2563EB" Offset="0.6" />
+                        <GradientStop Color="#3B82F6" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <VerticalStackLayout Spacing="12">
+                    <Border StrokeShape="RoundRectangle 12" BackgroundColor="#33FFFFFF" StrokeThickness="0" Padding="10,4" HorizontalOptions="Start">
+                        <Label Text="⚡ МОБІЛЬНИЙ КАБІНЕТ ЖКГ" FontSize="11" FontAttributes="Bold" TextColor="#E0F2FE" />
+                    </Border>
+
+                    <Label Text="Комунальні послуги"
+                           FontSize="26"
+                           FontAttributes="Bold"
+                           TextColor="White" />
+
+                    <Label Text="Ведення обліку мешканців, квартир, тарифів на послуги та миттєве формування квитанцій."
+                           FontSize="14"
+                           TextColor="#DBEAFE"
+                           LineHeight="1.25" />
+
+                    <Button Text="🧾 Перевірити нарахування"
+                            Command="{Binding NavigateToSectionCommand}"
+                            CommandParameter="Bills"
+                            BackgroundColor="White"
+                            TextColor="#1E40AF"
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            CornerRadius="12"
+                            Padding="18,12"
+                            Margin="0,4,0,0"
+                            HorizontalOptions="Fill" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Statistics Section -->
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Зведена статистика"
+                       FontSize="17"
+                       FontAttributes="Bold"
+                       TextColor="#0F172A"
+                       Margin="4,0,0,0" />
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                    <!-- Stat 1: Tenants -->
+                    <Border Grid.Row="0" Grid.Column="0" StrokeShape="RoundRectangle 16" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="14">
+                        <VerticalStackLayout Spacing="8">
+                            <Border StrokeShape="RoundRectangle 10" BackgroundColor="#DBEAFE" StrokeThickness="0" WidthRequest="38" HeightRequest="38" HorizontalOptions="Start">
+                                <Label Text="👥" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                            <Label Text="{Binding TotalTenants}" FontSize="22" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Label Text="Мешканців у базі" FontSize="12" TextColor="#64748B" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Stat 2: Apartments -->
+                    <Border Grid.Row="0" Grid.Column="1" StrokeShape="RoundRectangle 16" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="14">
+                        <VerticalStackLayout Spacing="8">
+                            <Border StrokeShape="RoundRectangle 10" BackgroundColor="#EDE9FE" StrokeThickness="0" WidthRequest="38" HeightRequest="38" HorizontalOptions="Start">
+                                <Label Text="🏢" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                            <Label Text="{Binding TotalApartments}" FontSize="22" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Label Text="Особових рахунків" FontSize="12" TextColor="#64748B" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Stat 3: Services -->
+                    <Border Grid.Row="1" Grid.Column="0" StrokeShape="RoundRectangle 16" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="14">
+                        <VerticalStackLayout Spacing="8">
+                            <Border StrokeShape="RoundRectangle 10" BackgroundColor="#FEF3C7" StrokeThickness="0" WidthRequest="38" HeightRequest="38" HorizontalOptions="Start">
+                                <Label Text="⚡" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                            <Label Text="{Binding TotalServices}" FontSize="22" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Label Text="Активних послуг" FontSize="12" TextColor="#64748B" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Stat 4: Monthly Revenue -->
+                    <Border Grid.Row="1" Grid.Column="1" StrokeShape="RoundRectangle 16" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="14">
+                        <VerticalStackLayout Spacing="8">
+                            <Border StrokeShape="RoundRectangle 10" BackgroundColor="#D1FAE5" StrokeThickness="0" WidthRequest="38" HeightRequest="38" HorizontalOptions="Start">
+                                <Label Text="💰" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                            <Label Text="{Binding TotalMonthlyRevenue, StringFormat='{0:F0} ₴'}" FontSize="22" FontAttributes="Bold" TextColor="#059669" />
+                            <Label Text="Нарахування / міс." FontSize="12" TextColor="#64748B" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+
+            <!-- Quick Navigation Section -->
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Розділи системи"
+                       FontSize="17"
+                       FontAttributes="Bold"
+                       TextColor="#0F172A"
+                       Margin="4,2,0,0" />
+
+                <!-- Card 1: Мешканці -->
+                <Border StrokeShape="RoundRectangle 16" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="14">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToSectionCommand}" CommandParameter="Tenants" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="46,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 12" BackgroundColor="#EFF6FF" StrokeThickness="0" WidthRequest="46" HeightRequest="46">
+                            <Label Text="👥" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label Text="Мешканці" FontSize="16" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Label Text="Реєстр власників та підключені послуги" FontSize="12" TextColor="#64748B" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="2"
+                                Text="Відкрити"
+                                Command="{Binding NavigateToSectionCommand}"
+                                CommandParameter="Tenants"
+                                BackgroundColor="#EFF6FF"
+                                TextColor="#2563EB"
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                CornerRadius="10"
+                                Padding="12,8"
+                                MinimumHeightRequest="36"
+                                VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Card 2: Квартири -->
+                <Border StrokeShape="RoundRectangle 16" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="14">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToSectionCommand}" CommandParameter="Apartments" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="46,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 12" BackgroundColor="#F5F3FF" StrokeThickness="0" WidthRequest="46" HeightRequest="46">
+                            <Label Text="🏢" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label Text="Квартири" FontSize="16" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Label Text="Житловий фонд, площа та особові рахунки" FontSize="12" TextColor="#64748B" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="2"
+                                Text="Відкрити"
+                                Command="{Binding NavigateToSectionCommand}"
+                                CommandParameter="Apartments"
+                                BackgroundColor="#F5F3FF"
+                                TextColor="#7C3AED"
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                CornerRadius="10"
+                                Padding="12,8"
+                                MinimumHeightRequest="36"
+                                VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Card 3: Послуги -->
+                <Border StrokeShape="RoundRectangle 16" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="14">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToSectionCommand}" CommandParameter="Services" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="46,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 12" BackgroundColor="#FFFBEB" StrokeThickness="0" WidthRequest="46" HeightRequest="46">
+                            <Label Text="⚡" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label Text="Послуги і тарифи" FontSize="16" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Label Text="Ставки за площею та кількістю мешканців" FontSize="12" TextColor="#64748B" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="2"
+                                Text="Відкрити"
+                                Command="{Binding NavigateToSectionCommand}"
+                                CommandParameter="Services"
+                                BackgroundColor="#FFFBEB"
+                                TextColor="#D97706"
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                CornerRadius="10"
+                                Padding="12,8"
+                                MinimumHeightRequest="36"
+                                VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Card 4: Квитанції -->
+                <Border StrokeShape="RoundRectangle 16" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="14">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToSectionCommand}" CommandParameter="Bills" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="46,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 12" BackgroundColor="#ECFDF5" StrokeThickness="0" WidthRequest="46" HeightRequest="46">
+                            <Label Text="🧾" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label Text="Перевірка нарахувань" FontSize="16" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Label Text="Пошук за рахунком, деталізація та квитанція" FontSize="12" TextColor="#64748B" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="2"
+                                Text="Перевірити"
+                                Command="{Binding NavigateToSectionCommand}"
+                                CommandParameter="Bills"
+                                BackgroundColor="#ECFDF5"
+                                TextColor="#059669"
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                CornerRadius="10"
+                                Padding="12,8"
+                                MinimumHeightRequest="36"
+                                VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

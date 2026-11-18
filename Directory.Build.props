@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <!-- Bypass GetLatestMSVCVersion when Visual Studio C++ (MSVC) workload is not installed -->
+    <VCToolsInstallDir Condition="'$(VCToolsInstallDir)' == ''">None</VCToolsInstallDir>
+    <MsPdbCmfExeFullpath Condition="'$(MsPdbCmfExeFullpath)' == ''">None</MsPdbCmfExeFullpath>
+    <VCInstallPath32 Condition="'$(VCInstallPath32)' == ''">None</VCInstallPath32>
+    <VCInstallPath64 Condition="'$(VCInstallPath64)' == ''">None</VCInstallPath64>
+  </PropertyGroup>
+</Project>

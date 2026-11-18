@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Lab7_MAUI.ViewModels"
+             xmlns:models="clr-namespace:Lab7_MAUI.Models"
+             x:Class="Lab7_MAUI.Views.ServicesPage"
+             x:DataType="vm:ServicesViewModel"
+             Title="Послуги"
+             BackgroundColor="#F1F5F9">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Mobile Top App Bar -->
+        <Border Grid.Row="0" StrokeThickness="0,0,0,1" Stroke="#E2E8F0" BackgroundColor="White" Padding="16,14">
+            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center" MaximumWidthRequest="540" HorizontalOptions="Fill">
+                <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                    <Label Text="⚡ Послуги і тарифи" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" />
+                    <Label Text="Довідник комунальних тарифів" FontSize="12" TextColor="#64748B" />
+                </VerticalStackLayout>
+
+                <Button Grid.Column="1"
+                        Text="+ Додати"
+                        Command="{Binding ShowCreateCommand}"
+                        IsVisible="{Binding IsListView}"
+                        BackgroundColor="#2563EB"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="12"
+                        Padding="14,8"
+                        MinimumHeightRequest="38"
+                        VerticalOptions="Center" />
+            </Grid>
+        </Border>
+
+        <!-- Main Scrollable Body -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,14,16,28" Spacing="14" MaximumWidthRequest="540" HorizontalOptions="Fill">
+
+                <!-- 1. LIST VIEW -->
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding IsListView}">
+
+                    <!-- Search Box -->
+                    <Border StrokeShape="RoundRectangle 14" Stroke="#CBD5E1" StrokeThickness="1" BackgroundColor="White" Padding="12,2">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" VerticalOptions="Center">
+                            <Label Grid.Column="0" Text="🔍" FontSize="15" VerticalOptions="Center" />
+                            <Entry Grid.Column="1"
+                                   Text="{Binding SearchText}"
+                                   Placeholder="Пошук послуги або типу розрахунку..."
+                                   PlaceholderColor="#94A3B8"
+                                   FontSize="14"
+                                   TextColor="#0F172A"
+                                   ClearButtonVisibility="WhileEditing" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Mobile Service Cards -->
+                    <CollectionView ItemsSource="{Binding Services}" SelectionMode="None">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.EmptyView>
+                            <Border StrokeShape="RoundRectangle 16" Stroke="#E2E8F0" BackgroundColor="White" Padding="24" Margin="0,8,0,0">
+                                <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                    <Label Text="⚡" FontSize="28" HorizontalOptions="Center" />
+                                    <Label Text="Послуг не знайдено" FontSize="15" FontAttributes="Bold" TextColor="#334155" HorizontalOptions="Center" />
+                                    <Label Text="Спробуйте інший запит або створіть нову послугу." FontSize="12" TextColor="#64748B" HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Service">
+                                <Border StrokeShape="RoundRectangle 16" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="14">
+                                    <VerticalStackLayout Spacing="10">
+
+                                        <!-- Service Title & Calculation Badge -->
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" VerticalOptions="Start">
+                                            <Label Grid.Column="0" Text="{Binding ServiceName}" FontSize="15" FontAttributes="Bold" TextColor="#0F172A" />
+                                            <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="#FEF3C7" StrokeThickness="0" Padding="8,4" VerticalOptions="Start">
+                                                <Label Text="{Binding CalculationType}" FontSize="11" FontAttributes="Bold" TextColor="#B45309" />
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- Tariff Highlight Box -->
+                                        <Border StrokeShape="RoundRectangle 10" BackgroundColor="#F8FAFC" Stroke="#E2E8F0" Padding="12,8">
+                                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" VerticalOptions="Center">
+                                                <Label Grid.Column="0" Text="💰 Діючий тариф:" FontSize="13" TextColor="#64748B" VerticalOptions="Center" />
+                                                <Label Grid.Column="1" Text="{Binding TariffDisplay}" FontSize="14" FontAttributes="Bold" TextColor="#059669" HorizontalOptions="End" VerticalOptions="Center" />
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Action Buttons -->
+                                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                            <Button Grid.Column="0"
+                                                    Text="Деталі"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ServicesViewModel}}, Path=ShowDetailsCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#F1F5F9"
+                                                    TextColor="#334155"
+                                                    FontAttributes="Bold"
+                                                    FontSize="12"
+                                                    CornerRadius="10"
+                                                    Padding="8,8"
+                                                    MinimumHeightRequest="36" />
+
+                                            <Button Grid.Column="1"
+                                                    Text="Змінити"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ServicesViewModel}}, Path=ShowEditCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#EFF6FF"
+                                                    TextColor="#2563EB"
+                                                    FontAttributes="Bold"
+                                                    FontSize="12"
+                                                    CornerRadius="10"
+                                                    Padding="8,8"
+                                                    MinimumHeightRequest="36" />
+
+                                            <Button Grid.Column="2"
+                                                    Text="Видалити"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ServicesViewModel}}, Path=ShowDeleteCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#FEF2F2"
+                                                    TextColor="#DC2626"
+                                                    FontAttributes="Bold"
+                                                    FontSize="12"
+                                                    CornerRadius="10"
+                                                    Padding="8,8"
+                                                    MinimumHeightRequest="36" />
+                                        </Grid>
+
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- 2. CREATE VIEW -->
+                <Border StrokeShape="RoundRectangle 18" Stroke="#E2E8F0" BackgroundColor="White" Padding="18" IsVisible="{Binding IsCreateView}">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Нова послуга" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" />
+                        <Label Text="Встановіть назву та тарифну ставку для розрахунків" FontSize="13" TextColor="#64748B" />
+                        <BoxView HeightRequest="1" Color="#E2E8F0" />
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Назва послуги *" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                <Entry Text="{Binding InputServiceName}" FontSize="14" TextColor="#0F172A" Placeholder="Напр.: Газопостачання" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Тариф за 1 м² площі (грн)" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                <Entry Text="{Binding InputPricePerSquareMeter}" FontSize="14" TextColor="#0F172A" Keyboard="Numeric" Placeholder="Залиште порожнім, якщо за особу" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Тариф за 1 особу (грн)" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                <Entry Text="{Binding InputPricePerPerson}" FontSize="14" TextColor="#0F172A" Keyboard="Numeric" Placeholder="Залиште порожнім, якщо за площею" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Тип розрахунку" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                <Entry Text="{Binding InputCalculationType}" FontSize="14" TextColor="#0F172A" Placeholder="за площею / за кількістю мешканців" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
+                            <Button Grid.Column="0"
+                                    Text="Скасувати"
+                                    Command="{Binding BackToListCommand}"
+                                    BackgroundColor="#F1F5F9"
+                                    TextColor="#475569"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                            <Button Grid.Column="1"
+                                    Text="Зберегти"
+                                    Command="{Binding SaveCreateCommand}"
+                                    BackgroundColor="#2563EB"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- 3. EDIT VIEW -->
+                <Border StrokeShape="RoundRectangle 18" Stroke="#E2E8F0" BackgroundColor="White" Padding="18" IsVisible="{Binding IsEditView}">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Редагування тарифу" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" />
+                        <Label Text="Змініть параметри нарахування послуги" FontSize="13" TextColor="#64748B" />
+                        <BoxView HeightRequest="1" Color="#E2E8F0" />
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Назва послуги *" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                <Entry Text="{Binding InputServiceName}" FontSize="14" TextColor="#0F172A" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Тариф за 1 м² площі (грн)" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                <Entry Text="{Binding InputPricePerSquareMeter}" FontSize="14" TextColor="#0F172A" Keyboard="Numeric" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Тариф за 1 особу (грн)" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                <Entry Text="{Binding InputPricePerPerson}" FontSize="14" TextColor="#0F172A" Keyboard="Numeric" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Тип розрахунку" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                <Entry Text="{Binding InputCalculationType}" FontSize="14" TextColor="#0F172A" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
+                            <Button Grid.Column="0"
+                                    Text="Назад"
+                                    Command="{Binding BackToListCommand}"
+                                    BackgroundColor="#F1F5F9"
+                                    TextColor="#475569"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                            <Button Grid.Column="1"
+                                    Text="Оновити"
+                                    Command="{Binding SaveEditCommand}"
+                                    BackgroundColor="#2563EB"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- 4. DETAILS VIEW -->
+                <Border StrokeShape="RoundRectangle 18" Stroke="#E2E8F0" BackgroundColor="White" Padding="18" IsVisible="{Binding IsDetailsView}">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Деталі послуги" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" />
+                        <BoxView HeightRequest="1" Color="#E2E8F0" />
+
+                        <Border StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Stroke="#E2E8F0" Padding="14">
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="130,*">
+                                    <Label Grid.Column="0" Text="Назва послуги:" FontAttributes="Bold" TextColor="#64748B" FontSize="13" />
+                                    <Label Grid.Column="1" Text="{Binding SelectedService.ServiceName}" FontAttributes="Bold" TextColor="#0F172A" FontSize="14" />
+                                </Grid>
+                                <Grid ColumnDefinitions="130,*">
+                                    <Label Grid.Column="0" Text="Тип розрахунку:" FontAttributes="Bold" TextColor="#64748B" FontSize="13" />
+                                    <Label Grid.Column="1" Text="{Binding SelectedService.CalculationType}" FontAttributes="Bold" TextColor="#D97706" FontSize="14" />
+                                </Grid>
+                                <Grid ColumnDefinitions="130,*">
+                                    <Label Grid.Column="0" Text="Діючий тариф:" FontAttributes="Bold" TextColor="#64748B" FontSize="13" />
+                                    <Label Grid.Column="1" Text="{Binding SelectedService.TariffDisplay}" FontAttributes="Bold" TextColor="#059669" FontSize="14" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
+                            <Button Grid.Column="0"
+                                    Text="← До списку"
+                                    Command="{Binding BackToListCommand}"
+                                    BackgroundColor="#F1F5F9"
+                                    TextColor="#475569"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                            <Button Grid.Column="1"
+                                    Text="✏️ Редагувати"
+                                    Command="{Binding ShowEditCommand}"
+                                    CommandParameter="{Binding SelectedService}"
+                                    BackgroundColor="#EFF6FF"
+                                    TextColor="#2563EB"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- 5. DELETE VIEW -->
+                <Border StrokeShape="RoundRectangle 18" Stroke="#FECACA" BackgroundColor="White" Padding="18" IsVisible="{Binding IsDeleteView}">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Видалення послуги" FontSize="20" FontAttributes="Bold" TextColor="#DC2626" />
+                        <Label Text="Ви дійсно бажаєте видалити цю комунальну послугу з довідника?" FontSize="13" TextColor="#64748B" />
+                        <BoxView HeightRequest="1" Color="#FEE2E2" />
+
+                        <Border StrokeShape="RoundRectangle 12" BackgroundColor="#FEF2F2" Stroke="#FECACA" Padding="14">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="{Binding SelectedService.ServiceName}" FontSize="16" FontAttributes="Bold" TextColor="#991B1B" />
+                                <Label Text="{Binding SelectedService.TariffDisplay, StringFormat='Тариф: {0}'}" FontSize="13" TextColor="#B91C1C" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
+                            <Button Grid.Column="0"
+                                    Text="Скасувати"
+                                    Command="{Binding BackToListCommand}"
+                                    BackgroundColor="#F1F5F9"
+                                    TextColor="#475569"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                            <Button Grid.Column="1"
+                                    Text="🗑️ Видалити"
+                                    Command="{Binding ConfirmDeleteCommand}"
+                                    BackgroundColor="#DC2626"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

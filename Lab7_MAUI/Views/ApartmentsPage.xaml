@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Lab7_MAUI.ViewModels"
+             xmlns:models="clr-namespace:Lab7_MAUI.Models"
+             x:Class="Lab7_MAUI.Views.ApartmentsPage"
+             x:DataType="vm:ApartmentsViewModel"
+             Title="Квартири"
+             BackgroundColor="#F1F5F9">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Mobile Top App Bar -->
+        <Border Grid.Row="0" StrokeThickness="0,0,0,1" Stroke="#E2E8F0" BackgroundColor="White" Padding="16,14">
+            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center" MaximumWidthRequest="540" HorizontalOptions="Fill">
+                <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                    <Label Text="🏢 Квартири" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" />
+                    <Label Text="Житловий фонд та особові рахунки" FontSize="12" TextColor="#64748B" />
+                </VerticalStackLayout>
+
+                <Button Grid.Column="1"
+                        Text="+ Додати"
+                        Command="{Binding ShowCreateCommand}"
+                        IsVisible="{Binding IsListView}"
+                        BackgroundColor="#2563EB"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="12"
+                        Padding="14,8"
+                        MinimumHeightRequest="38"
+                        VerticalOptions="Center" />
+            </Grid>
+        </Border>
+
+        <!-- Main Scrollable Body -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,14,16,28" Spacing="14" MaximumWidthRequest="540" HorizontalOptions="Fill">
+
+                <!-- 1. LIST VIEW -->
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding IsListView}">
+
+                    <!-- Search Box -->
+                    <Border StrokeShape="RoundRectangle 14" Stroke="#CBD5E1" StrokeThickness="1" BackgroundColor="White" Padding="12,2">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" VerticalOptions="Center">
+                            <Label Grid.Column="0" Text="🔍" FontSize="15" VerticalOptions="Center" />
+                            <Entry Grid.Column="1"
+                                   Text="{Binding SearchText}"
+                                   Placeholder="Адреса, рахунок (ACC-...) або власник..."
+                                   PlaceholderColor="#94A3B8"
+                                   FontSize="14"
+                                   TextColor="#0F172A"
+                                   ClearButtonVisibility="WhileEditing" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Mobile Apartment Cards -->
+                    <CollectionView ItemsSource="{Binding Apartments}" SelectionMode="None">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.EmptyView>
+                            <Border StrokeShape="RoundRectangle 16" Stroke="#E2E8F0" BackgroundColor="White" Padding="24" Margin="0,8,0,0">
+                                <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                    <Label Text="🏢" FontSize="28" HorizontalOptions="Center" />
+                                    <Label Text="Квартир не знайдено" FontSize="15" FontAttributes="Bold" TextColor="#334155" HorizontalOptions="Center" />
+                                    <Label Text="Спробуйте змінити параметри пошуку або додайте нову квартиру." FontSize="12" TextColor="#64748B" HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Apartment">
+                                <Border StrokeShape="RoundRectangle 16" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="14">
+                                    <VerticalStackLayout Spacing="10">
+
+                                        <!-- Top Badges: Account Number + Area + Residents -->
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6" VerticalOptions="Center">
+                                            <Border Grid.Column="0" StrokeShape="RoundRectangle 8" BackgroundColor="#DBEAFE" StrokeThickness="0" Padding="10,4">
+                                                <Label Text="{Binding AccountNumber, StringFormat='💳 {0}'}" FontSize="12" FontAttributes="Bold" TextColor="#1D4ED8" />
+                                            </Border>
+
+                                            <HorizontalStackLayout Grid.Column="2" Spacing="6">
+                                                <Border StrokeShape="RoundRectangle 8" BackgroundColor="#F1F5F9" StrokeThickness="0" Padding="8,4">
+                                                    <Label Text="{Binding Area, StringFormat='📐 {0:F1} м²'}" FontSize="12" FontAttributes="Bold" TextColor="#334155" />
+                                                </Border>
+                                                <Border StrokeShape="RoundRectangle 8" BackgroundColor="#F5F3FF" StrokeThickness="0" Padding="8,4">
+                                                    <Label Text="{Binding ResidentsCount, StringFormat='👥 {0} ос.'}" FontSize="12" FontAttributes="Bold" TextColor="#6D28D9" />
+                                                </Border>
+                                            </HorizontalStackLayout>
+                                        </Grid>
+
+                                        <!-- Address & Owner -->
+                                        <VerticalStackLayout Spacing="4">
+                                            <Label Text="{Binding Address}" FontSize="15" FontAttributes="Bold" TextColor="#0F172A" />
+                                            <Label Text="{Binding TenantName, StringFormat='👤 Власник: {0}'}" FontSize="13" TextColor="#475569" />
+                                        </VerticalStackLayout>
+
+                                        <BoxView HeightRequest="1" Color="#F1F5F9" />
+
+                                        <!-- Action Buttons -->
+                                        <Grid ColumnDefinitions="1.25*,*,*,*" ColumnSpacing="6">
+                                            <Button Grid.Column="0"
+                                                    Text="🧾 Квитанція"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ApartmentsViewModel}}, Path=ViewBillCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#ECFDF5"
+                                                    TextColor="#059669"
+                                                    FontAttributes="Bold"
+                                                    FontSize="12"
+                                                    CornerRadius="10"
+                                                    Padding="6,8"
+                                                    MinimumHeightRequest="36" />
+
+                                            <Button Grid.Column="1"
+                                                    Text="Деталі"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ApartmentsViewModel}}, Path=ShowDetailsCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#F1F5F9"
+                                                    TextColor="#334155"
+                                                    FontAttributes="Bold"
+                                                    FontSize="12"
+                                                    CornerRadius="10"
+                                                    Padding="6,8"
+                                                    MinimumHeightRequest="36" />
+
+                                            <Button Grid.Column="2"
+                                                    Text="Змінити"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ApartmentsViewModel}}, Path=ShowEditCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#EFF6FF"
+                                                    TextColor="#2563EB"
+                                                    FontAttributes="Bold"
+                                                    FontSize="12"
+                                                    CornerRadius="10"
+                                                    Padding="6,8"
+                                                    MinimumHeightRequest="36" />
+
+                                            <Button Grid.Column="3"
+                                                    Text="Видалити"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ApartmentsViewModel}}, Path=ShowDeleteCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#FEF2F2"
+                                                    TextColor="#DC2626"
+                                                    FontAttributes="Bold"
+                                                    FontSize="12"
+                                                    CornerRadius="10"
+                                                    Padding="6,8"
+                                                    MinimumHeightRequest="36" />
+                                        </Grid>
+
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- 2. CREATE VIEW -->
+                <Border StrokeShape="RoundRectangle 18" Stroke="#E2E8F0" BackgroundColor="White" Padding="18" IsVisible="{Binding IsCreateView}">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Нова квартира" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" />
+                        <Label Text="Вкажіть параметри житла та особового рахунку" FontSize="13" TextColor="#64748B" />
+                        <BoxView HeightRequest="1" Color="#E2E8F0" />
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Власник квартири *" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="10,2">
+                                <Picker ItemsSource="{Binding AvailableTenants}"
+                                        ItemDisplayBinding="{Binding FullName}"
+                                        SelectedItem="{Binding SelectedTenantForApartment}"
+                                        Title="Оберіть власника зі списку"
+                                        TextColor="#0F172A" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Адреса проживання *" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                <Entry Text="{Binding InputAddress}" FontSize="14" TextColor="#0F172A" Placeholder="вул. Хрещатик, 15, кв. 42" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Особовий рахунок *" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                <Entry Text="{Binding InputAccountNumber}" FontSize="14" TextColor="#0F172A" Placeholder="ACC-1005" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                <Label Text="Мешканців (осіб)" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                                <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                    <Entry Text="{Binding InputResidentsCount}" FontSize="14" TextColor="#0F172A" Keyboard="Numeric" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="6">
+                                <Label Text="Площа (м²)" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                                <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                    <Entry Text="{Binding InputArea}" FontSize="14" TextColor="#0F172A" Keyboard="Numeric" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
+                            <Button Grid.Column="0"
+                                    Text="Скасувати"
+                                    Command="{Binding BackToListCommand}"
+                                    BackgroundColor="#F1F5F9"
+                                    TextColor="#475569"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                            <Button Grid.Column="1"
+                                    Text="Зберегти"
+                                    Command="{Binding SaveCreateCommand}"
+                                    BackgroundColor="#2563EB"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- 3. EDIT VIEW -->
+                <Border StrokeShape="RoundRectangle 18" Stroke="#E2E8F0" BackgroundColor="White" Padding="18" IsVisible="{Binding IsEditView}">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Редагування квартири" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" />
+                        <Label Text="Оновіть дані особового рахунку та параметри житла" FontSize="13" TextColor="#64748B" />
+                        <BoxView HeightRequest="1" Color="#E2E8F0" />
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Власник квартири *" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="10,2">
+                                <Picker ItemsSource="{Binding AvailableTenants}"
+                                        ItemDisplayBinding="{Binding FullName}"
+                                        SelectedItem="{Binding SelectedTenantForApartment}"
+                                        TextColor="#0F172A" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Адреса проживання *" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                <Entry Text="{Binding InputAddress}" FontSize="14" TextColor="#0F172A" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Особовий рахунок *" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                <Entry Text="{Binding InputAccountNumber}" FontSize="14" TextColor="#0F172A" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                <Label Text="Мешканців (осіб)" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                                <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                    <Entry Text="{Binding InputResidentsCount}" FontSize="14" TextColor="#0F172A" Keyboard="Numeric" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="6">
+                                <Label Text="Площа (м²)" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                                <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                    <Entry Text="{Binding InputArea}" FontSize="14" TextColor="#0F172A" Keyboard="Numeric" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
+                            <Button Grid.Column="0"
+                                    Text="Назад"
+                                    Command="{Binding BackToListCommand}"
+                                    BackgroundColor="#F1F5F9"
+                                    TextColor="#475569"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                            <Button Grid.Column="1"
+                                    Text="Оновити"
+                                    Command="{Binding SaveEditCommand}"
+                                    BackgroundColor="#2563EB"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- 4. DETAILS VIEW -->
+                <Border StrokeShape="RoundRectangle 18" Stroke="#E2E8F0" BackgroundColor="White" Padding="18" IsVisible="{Binding IsDetailsView}">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Інформація про квартиру" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" />
+                        <BoxView HeightRequest="1" Color="#E2E8F0" />
+
+                        <Border StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Stroke="#E2E8F0" Padding="14">
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="130,*">
+                                    <Label Grid.Column="0" Text="Особовий рахунок:" FontAttributes="Bold" TextColor="#64748B" FontSize="13" />
+                                    <Label Grid.Column="1" Text="{Binding SelectedApartment.AccountNumber}" FontAttributes="Bold" TextColor="#2563EB" FontSize="14" />
+                                </Grid>
+                                <Grid ColumnDefinitions="130,*">
+                                    <Label Grid.Column="0" Text="Власник:" FontAttributes="Bold" TextColor="#64748B" FontSize="13" />
+                                    <Label Grid.Column="1" Text="{Binding SelectedApartment.TenantName}" FontAttributes="Bold" TextColor="#0F172A" FontSize="14" />
+                                </Grid>
+                                <Grid ColumnDefinitions="130,*">
+                                    <Label Grid.Column="0" Text="Адреса:" FontAttributes="Bold" TextColor="#64748B" FontSize="13" />
+                                    <Label Grid.Column="1" Text="{Binding SelectedApartment.Address}" FontAttributes="Bold" TextColor="#0F172A" FontSize="14" />
+                                </Grid>
+                                <Grid ColumnDefinitions="130,*">
+                                    <Label Grid.Column="0" Text="Мешканців:" FontAttributes="Bold" TextColor="#64748B" FontSize="13" />
+                                    <Label Grid.Column="1" Text="{Binding SelectedApartment.ResidentsCount, StringFormat='{0} осіб'}" FontAttributes="Bold" TextColor="#0F172A" FontSize="14" />
+                                </Grid>
+                                <Grid ColumnDefinitions="130,*">
+                                    <Label Grid.Column="0" Text="Загальна площа:" FontAttributes="Bold" TextColor="#64748B" FontSize="13" />
+                                    <Label Grid.Column="1" Text="{Binding SelectedApartment.Area, StringFormat='{0:F2} м²'}" FontAttributes="Bold" TextColor="#0F172A" FontSize="14" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
+                            <Button Grid.Column="0"
+                                    Text="← До списку"
+                                    Command="{Binding BackToListCommand}"
+                                    BackgroundColor="#F1F5F9"
+                                    TextColor="#475569"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                            <Button Grid.Column="1"
+                                    Text="✏️ Редагувати"
+                                    Command="{Binding ShowEditCommand}"
+                                    CommandParameter="{Binding SelectedApartment}"
+                                    BackgroundColor="#EFF6FF"
+                                    TextColor="#2563EB"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- 5. DELETE VIEW -->
+                <Border StrokeShape="RoundRectangle 18" Stroke="#FECACA" BackgroundColor="White" Padding="18" IsVisible="{Binding IsDeleteView}">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Видалення квартири" FontSize="20" FontAttributes="Bold" TextColor="#DC2626" />
+                        <Label Text="Ви дійсно бажаєте видалити цей об'єкт житлового фонду?" FontSize="13" TextColor="#64748B" />
+                        <BoxView HeightRequest="1" Color="#FEE2E2" />
+
+                        <Border StrokeShape="RoundRectangle 12" BackgroundColor="#FEF2F2" Stroke="#FECACA" Padding="14">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="{Binding SelectedApartment.Address}" FontSize="16" FontAttributes="Bold" TextColor="#991B1B" />
+                                <Label Text="{Binding SelectedApartment.AccountNumber, StringFormat='Рахунок: {0}'}" FontSize="13" TextColor="#B91C1C" />
+                                <Label Text="{Binding SelectedApartment.TenantName, StringFormat='Власник: {0}'}" FontSize="13" TextColor="#B91C1C" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
+                            <Button Grid.Column="0"
+                                    Text="Скасувати"
+                                    Command="{Binding BackToListCommand}"
+                                    BackgroundColor="#F1F5F9"
+                                    TextColor="#475569"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                            <Button Grid.Column="1"
+                                    Text="🗑️ Видалити"
+                                    Command="{Binding ConfirmDeleteCommand}"
+                                    BackgroundColor="#DC2626"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,12" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

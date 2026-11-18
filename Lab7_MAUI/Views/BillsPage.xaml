@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Lab7_MAUI.ViewModels"
+             xmlns:models="clr-namespace:Lab7_MAUI.Models"
+             x:Class="Lab7_MAUI.Views.BillsPage"
+             x:DataType="vm:BillsViewModel"
+             Title="Рахунки"
+             BackgroundColor="#F1F5F9">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Mobile Top App Bar -->
+        <Border Grid.Row="0" StrokeThickness="0,0,0,1" Stroke="#E2E8F0" BackgroundColor="White" Padding="16,14">
+            <VerticalStackLayout Spacing="2" MaximumWidthRequest="540" HorizontalOptions="Fill">
+                <Label Text="🧾 Перевірка нарахувань" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" />
+                <Label Text="Формування електронної квитанції за особовим рахунком" FontSize="12" TextColor="#64748B" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Main Scrollable Body -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,14,16,28" Spacing="14" MaximumWidthRequest="540" HorizontalOptions="Fill">
+
+                <!-- VIEW 1: SEARCH ACCOUNT -->
+                <VerticalStackLayout Spacing="14">
+                    <VerticalStackLayout.Triggers>
+                        <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding HasBill}" Value="False">
+                            <Setter Property="IsVisible" Value="True" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding HasBill}" Value="True">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </VerticalStackLayout.Triggers>
+
+                    <!-- Search Form Card -->
+                    <Border StrokeShape="RoundRectangle 18" Stroke="#E2E8F0" BackgroundColor="White" Padding="18">
+                        <VerticalStackLayout Spacing="14">
+                            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                                <Border StrokeShape="RoundRectangle 12" BackgroundColor="#DBEAFE" StrokeThickness="0" WidthRequest="42" HeightRequest="42">
+                                    <Label Text="🔎" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
+                                </Border>
+                                <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                    <Label Text="Пошук за рахунком" FontSize="17" FontAttributes="Bold" TextColor="#0F172A" />
+                                    <Label Text="Введіть номер особового рахунку квартири" FontSize="12" TextColor="#64748B" />
+                                </VerticalStackLayout>
+                            </HorizontalStackLayout>
+
+                            <!-- Error Alert -->
+                            <Border StrokeShape="RoundRectangle 12" BackgroundColor="#FEF2F2" Stroke="#FECACA" Padding="12,10"
+                                    IsVisible="{Binding HasError}">
+                                <Label Text="{Binding ErrorMessage}" TextColor="#B91C1C" FontSize="13" />
+                            </Border>
+
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Номер особового рахунку" FontAttributes="Bold" TextColor="#334155" FontSize="13" />
+                                <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,4">
+                                    <Entry Text="{Binding SearchAccount}"
+                                           Placeholder="Наприклад: ACC-1001"
+                                           PlaceholderColor="#94A3B8"
+                                           FontSize="15"
+                                           TextColor="#0F172A"
+                                           ReturnCommand="{Binding CalculateBillCommand}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <Button Text="Розрахувати квитанцію"
+                                    Command="{Binding CalculateBillCommand}"
+                                    BackgroundColor="#2563EB"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    FontSize="15"
+                                    CornerRadius="12"
+                                    Padding="16,12"
+                                    HorizontalOptions="Fill" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Quick Account Selection Chips Card -->
+                    <Border StrokeShape="RoundRectangle 18" Stroke="#E2E8F0" BackgroundColor="White" Padding="18">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Швидкий вибір особового рахунку:" FontSize="14" FontAttributes="Bold" TextColor="#334155" />
+                            <Label Text="Натисніть на рахунок нижче для миттєвого перегляду нарахувань" FontSize="12" TextColor="#64748B" />
+
+                            <FlexLayout BindableLayout.ItemsSource="{Binding AvailableAccounts}" Wrap="Wrap" Margin="0,4,0,0">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <Button Text="{Binding ., StringFormat='💳 {0}'}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BillsViewModel}}, Path=SelectSampleAccountCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#EFF6FF"
+                                                TextColor="#1D4ED8"
+                                                FontAttributes="Bold"
+                                                FontSize="13"
+                                                CornerRadius="10"
+                                                Padding="12,8"
+                                                Margin="0,0,8,8"
+                                                MinimumHeightRequest="38" />
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </FlexLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- VIEW 2: MOBILE RECEIPT DETAILS -->
+                <VerticalStackLayout Spacing="14">
+                    <VerticalStackLayout.Triggers>
+                        <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding HasBill}" Value="True">
+                            <Setter Property="IsVisible" Value="True" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding HasBill}" Value="False">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </VerticalStackLayout.Triggers>
+
+                    <!-- Top Navigation & Print Buttons -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Button Grid.Column="0"
+                                Text="← Інший рахунок"
+                                Command="{Binding BackToSearchCommand}"
+                                BackgroundColor="White"
+                                BorderColor="#CBD5E1"
+                                BorderWidth="1"
+                                TextColor="#334155"
+                                FontAttributes="Bold"
+                                CornerRadius="12"
+                                Padding="12,10"
+                                FontSize="13" />
+
+                        <Button Grid.Column="1"
+                                Text="🖨️ Друк квитанції"
+                                Command="{Binding PrintReceiptCommand}"
+                                BackgroundColor="#1E40AF"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                CornerRadius="12"
+                                Padding="12,10"
+                                FontSize="13" />
+                    </Grid>
+
+                    <!-- Notification Alert -->
+                    <Border StrokeShape="RoundRectangle 12" BackgroundColor="#ECFDF5" Stroke="#A7F3D0" Padding="14,10"
+                            IsVisible="{Binding HasNotification}">
+                        <Label Text="{Binding NotificationMessage}" TextColor="#065F46" FontSize="13" FontAttributes="Bold" />
+                    </Border>
+
+                    <!-- Mobile Receipt Ticket Card -->
+                    <Border StrokeShape="RoundRectangle 20" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="0">
+                        <VerticalStackLayout Spacing="0">
+
+                            <!-- Receipt Top Header Banner -->
+                            <Border StrokeThickness="0" Padding="18,16">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#1E3A8A" Offset="0.0" />
+                                        <GradientStop Color="#2563EB" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <VerticalStackLayout Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                                        <Label Grid.Column="0" Text="ПЛАТІЖНЕ ПОВІДОМЛЕННЯ" FontSize="11" FontAttributes="Bold" TextColor="#BFDBFE" VerticalOptions="Center" />
+                                        <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="#33FFFFFF" StrokeThickness="0" Padding="8,3">
+                                            <Label Text="{Binding CurrentBill.AccountNumber}" FontSize="12" FontAttributes="Bold" TextColor="White" />
+                                        </Border>
+                                    </Grid>
+                                    <Label Text="{Binding CurrentBill.TenantFullName}" FontSize="18" FontAttributes="Bold" TextColor="White" />
+                                    <Label Text="{Binding CurrentBill.Address, StringFormat='📍 {0}'}" FontSize="13" TextColor="#DBEAFE" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- Receipt Content Body -->
+                            <VerticalStackLayout Padding="16" Spacing="14">
+
+                                <!-- Apartment Parameters Pill Grid -->
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                    <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="#F8FAFC" Stroke="#E2E8F0" Padding="10,8">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="Площа" FontSize="11" TextColor="#64748B" />
+                                            <Label Text="{Binding CurrentBill.Area, StringFormat='{0:F1} м²'}" FontSize="13" FontAttributes="Bold" TextColor="#0F172A" />
+                                        </VerticalStackLayout>
+                                    </Border>
+
+                                    <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="#F8FAFC" Stroke="#E2E8F0" Padding="10,8">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="Мешканців" FontSize="11" TextColor="#64748B" />
+                                            <Label Text="{Binding CurrentBill.ResidentsCount, StringFormat='{0} осіб'}" FontSize="13" FontAttributes="Bold" TextColor="#0F172A" />
+                                        </VerticalStackLayout>
+                                    </Border>
+
+                                    <Border Grid.Column="2" StrokeShape="RoundRectangle 10" BackgroundColor="#F8FAFC" Stroke="#E2E8F0" Padding="10,8">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="Дата" FontSize="11" TextColor="#64748B" />
+                                            <Label Text="{Binding CurrentBill.FormattedDate}" FontSize="11" FontAttributes="Bold" TextColor="#0F172A" LineBreakMode="TailTruncation" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </Grid>
+
+                                <Label Text="Деталізація нарахувань за послуги" FontSize="15" FontAttributes="Bold" TextColor="#0F172A" Margin="0,2,0,0" />
+
+                                <!-- Bill Line Items (Mobile Card Rows) -->
+                                <CollectionView ItemsSource="{Binding CurrentBill.Items}" SelectionMode="None">
+                                    <CollectionView.ItemsLayout>
+                                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:BillItemViewModel">
+                                            <Border StrokeShape="RoundRectangle 12" Stroke="#E2E8F0" BackgroundColor="#F8FAFC" Padding="12,10">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                                    <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                                        <Label Text="{Binding ServiceName}" FontSize="14" FontAttributes="Bold" TextColor="#0F172A" />
+                                                        <Label Text="{Binding CalculationType, StringFormat='Тип: {0}'}" FontSize="11" TextColor="#64748B" />
+                                                        <HorizontalStackLayout Spacing="4">
+                                                            <Label Text="{Binding FormattedVolume}" FontSize="12" TextColor="#475569" FontAttributes="Bold" />
+                                                            <Label Text="×" FontSize="12" TextColor="#94A3B8" />
+                                                            <Label Text="{Binding FormattedTariff}" FontSize="12" TextColor="#475569" />
+                                                        </HorizontalStackLayout>
+                                                    </VerticalStackLayout>
+
+                                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End">
+                                                        <Label Text="{Binding FormattedTotal}" FontSize="15" FontAttributes="Bold" TextColor="#1D4ED8" HorizontalOptions="End" />
+                                                    </VerticalStackLayout>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+
+                                <!-- Grand Total Highlight Banner -->
+                                <Border StrokeShape="RoundRectangle 14" BackgroundColor="#ECFDF5" Stroke="#A7F3D0" Padding="16,14" Margin="0,4,0,0">
+                                    <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="РАЗОМ ДО СПЛАТИ" FontSize="12" FontAttributes="Bold" TextColor="#047857" />
+                                            <Label Text="{Binding CurrentBill.FormattedPeriod}" FontSize="11" TextColor="#059669" />
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="1" Text="{Binding CurrentBill.FormattedGrandTotal}" FontSize="20" FontAttributes="Bold" TextColor="#065F46" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Email Receipt Card -->
+                    <Border StrokeShape="RoundRectangle 18" Stroke="#E2E8F0" BackgroundColor="White" Padding="16">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="✉️ Відправити квитанцію на Email" FontSize="15" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Border Stroke="#CBD5E1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" Padding="12,2">
+                                <Entry Text="{Binding EmailInput}"
+                                       Placeholder="Введіть email (напр. user@gmail.com)"
+                                       PlaceholderColor="#94A3B8"
+                                       Keyboard="Email"
+                                       FontSize="14"
+                                       TextColor="#0F172A" />
+                            </Border>
+                            <Button Text="Надіслати на пошту"
+                                    Command="{Binding SendNotificationCommand}"
+                                    BackgroundColor="#EFF6FF"
+                                    TextColor="#2563EB"
+                                    FontAttributes="Bold"
+                                    CornerRadius="12"
+                                    Padding="14,10"
+                                    FontSize="14"
+                                    HorizontalOptions="Fill" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>
